@@ -102,11 +102,17 @@ def main():
         
         st.success("Data successfully scraped!")
         st.header("Scraped Product Data")
-        st.write(f"Title: {scraped_data['title']}")
         
-        for key, value in scraped_data.items():
-            response = f"The {key} of the product is: {value}"
-            st.session_state.chat_history.append(response)
+        if "title" in st.session_state.user_input:
+            st.write(f"Title: {scraped_data['title']}")
+        if "price" in st.session_state.user_input:
+            st.write(f"Price: {scraped_data['price']}")
+        if "rating" in st.session_state.user_input:
+            st.write(f"Rating: {scraped_data['rating']}")
+        if "availability" in st.session_state.user_input:
+            st.write(f"Availability: {scraped_data['availability']}")
+        if "reviews" in st.session_state.user_input:
+            st.write(f"Reviews: {', '.join(scraped_data['reviews'])}")
             
         st.session_state.user_input=""
         
