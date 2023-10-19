@@ -20,7 +20,6 @@ def main():
         st.session_state.user_input = user_input.lower()
         st.session_state.chat_history.append(f"You: {st.session_state.user_input}")
         
-        # Scrape product data
         try:
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -32,15 +31,21 @@ def main():
             if response.status_code == 200:
                 soup = BeautifulSoup(response.text, 'html.parser')
                 
+                title = None
+                price = "Price not available"
+                rating = "Rating not available"
+                available = "Availability not available"
+                reviews = ["No reviews available"]
+
                 # Get title
                 try:
                     title = soup.find("span", attrs={"id": 'productTitle'})
                     title_value = title.text
-                    title_string = title_value.strip()
-                    if title_string == "Title not available":
-                        title_string = None
+                    title = title_value.strip()
+                    if title == "Title not available":
+                        title = None
                 except Exception:
-                    title_string = None
+                    title = None
 
                 # Get price
                 try:
@@ -71,50 +76,33 @@ def main():
                 reviews = []
                 review_elements = soup.find_all("div", class_="a-row a-spacing-small review-data")
 
-                for i, element in enumerate(review_elements[:10]):  # Extract the first 10 reviews
+                for i, element in enumerate(review_elements[:10]):
                     review_text = element.find("span", class_="a-size-base review-text").text.strip()
                     review_lines = review_text.split('\n')
                     for line in review_lines:
                         if line.strip():
                             reviews.append(f"{i + 1}. {line.strip()}")
-
-                if not reviews:
-                    reviews = ["No reviews available"]  # Assign a default value if no reviews are found
-    
-                if title_string:
-                    scraped_data = {
-                        'title': title_string,
-                        'price': price,
-                        'rating': rating,
-                        'availability': available,
-                        'reviews': reviews,
-                    }
-                    
-                    st.success("Data successfully scraped!")
-                    
-                    # Display only the title of the product under the "Scraped Product Data" section
-                    st.header("Scraped Product Data")
-                    st.write(f"Title: {title_string}")
-                    
-                    found_match = False
-
-                    for key in scraped_data.keys():
-                        if key in st.session_state.user_input:
-                            value = scraped_data.get(key, "Not available.")
-                            response = f"The {key} of the product is: {value}"
-                            st.session_state.chat_history.append(response)
-                            found_match = True
-
-                    if not found_match:
-                        st.session_state.chat_history.append("I'm sorry, I didn't understand your question. Could you please rephrase it?")
                         
-                else:
-                    st.error("Product title is not available.")
-            else:
-                st.error(f"Failed to retrieve the Amazon page: {webpage_url}")
         except Exception as e:
             st.error(f"An error occurred: {e}")
-            
+        
+        scraped_data = {
+            'title': title,
+            'price': price,
+            'rating': rating,
+            'availability': available,
+            'reviews': reviews,
+        }
+        
+        st.success("Data successfully scraped!")
+        
+        st.header("Scraped Product Data")
+        st.write(f"Title: {scraped_data['title']}")
+        
+        for key, value in scraped_data.items():
+            response = f"The {key} of the product is: {value}"
+            st.session_state.chat_history.append(response)
+        
         st.session_state.user_input=""
         
     st.text_area("Chat History", value="\n".join(st.session_state.chat_history), height=200)
