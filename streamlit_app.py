@@ -31,46 +31,51 @@ def main():
             if response.status_code == 200:
                 soup = BeautifulSoup(response.text, 'html.parser')
                 
-                title = None
-                price = "Price not available"
-                rating = "Rating not available"
-                available = "Availability not available"
-                reviews = ["No reviews available"]
+                scraped_data = {
+                    'title': None,
+                    'price': "Price not available",
+                    'rating': "Rating not available",
+                    'availability': "Availability not available",
+                    'reviews': ["No reviews available"]
+                }
 
                 # Get title
                 try:
                     title = soup.find("span", attrs={"id": 'productTitle'})
                     title_value = title.text
                     title = title_value.strip()
-                    if title == "Title not available":
-                        title = None
+                    if title != "Title not available":
+                        scraped_data['title'] = title
                 except Exception:
-                    title = None
+                    pass
 
                 # Get price
                 try:
                     price_whole = soup.find("span", class_='a-price-whole').text.strip()
                     price_fractional = soup.find("span", class_='a-price-fraction').text.strip()
                     price_currency = soup.find("span", class_='a-price-symbol').text.strip()
-                    price = f"{price_currency}{price_whole}.{price_fractional}"
+                    scraped_data['price'] = f"{price_currency}{price_whole}.{price_fractional}"
                 except Exception:
-                    price = "Price not available"
+                    pass
 
                 # Get rating
                 try:
                     rating = soup.find("i", attrs={'class': 'a-icon a-icon-star a-star-4-5'}).string.strip()
+                    scraped_data['rating'] = rating
                 except Exception:
                     try:
                         rating = soup.find("span", attrs={'class': 'a-icon-alt'}).string.strip()
+                        scraped_data['rating'] = rating
                     except:
-                        rating = "Rating not available"
+                        pass
 
                 # Get availability
                 try:
                     available = soup.find("div", attrs={'id': 'availability'})
                     available = available.find("span").string.strip()
+                    scraped_data['availability'] = available
                 except Exception:
-                    available = "Availability not available"
+                    pass
 
                 # Get reviews
                 reviews = []
@@ -83,26 +88,24 @@ def main():
                         if line.strip():
                             reviews.append(f"{i + 1}. {line.strip()}")
                         
+                if reviews:
+                    scraped_data['reviews'] = reviews
+                        
         except Exception as e:
             st.error(f"An error occurred: {e}")
         
-        scraped_data = {
-            'title': title,
-            'price': price,
-            'rating': rating,
-            'availability': available,
-            'reviews': reviews,
-        }
-        
-        st.success("Data successfully scraped!")
-        
-        st.header("Scraped Product Data")
-        st.write(f"Title: {scraped_data['title']}")
-        
-        for key, value in scraped_data.items():
-            response = f"The {key} of the product is: {value}"
-            st.session_state.chat_history.append(response)
-        
+        if scraped_data['title']:
+            st.success("Data successfully scraped!")
+            st.header("Scraped Product Data")
+            st.write(f"Title: {scraped_data['title']}")
+            
+            for key, value in scraped_data.items():
+                if value != "Price not available" and value != "Rating not available" and value != "Availability not available":
+                    response = f"The {key} of the product is: {value}"
+                    st.session_state.chat_history.append(response)
+        else:
+            st.session_state.chat_history.append("Product title is not available.")
+            
         st.session_state.user_input=""
         
     st.text_area("Chat History", value="\n".join(st.session_state.chat_history), height=200)
