@@ -81,9 +81,6 @@ def main():
                 if not reviews:
                     reviews = ["No reviews available"]  # Assign a default value if no reviews are found
     
-                if not reviews:
-                    reviews = ["No reviews available"]  # Assign a default value if no reviews are found
-
                 if title_string:
                     scraped_data = {
                         'title': title_string,
@@ -122,5 +119,5 @@ def main():
         
     st.text_area("Chat History", value="\n".join(st.session_state.chat_history), height=200)
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     main()
