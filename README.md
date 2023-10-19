@@ -25,13 +25,13 @@ To run Scrapify Assistant on local machine, follow these steps:
 2 Run the chatbot using Streamlit:
 ```streamlit run chatbot.py```
 
-##Usage
+## Usage
 1 Enter the URL of an Amazon product page.
 2 Click the "Send" button to scrape product data.
 3 Interact with the chatbot by asking questions or making requests.
 4 The chat history will be displayed below the input area.
 
-##Example Conversations
+## Example Conversations
 User: "What is the price of the product?"
 
 Chatbot: "The price of the product is $X.XX."
@@ -42,8 +42,8 @@ User: "Show me the title."
 
 Chatbot: "The title of the product is 'Product Title'."
 
-##Note
+## Note
 The chatbot is configured to work with Amazon product pages, and the HTML structure of other websites may require adjustments.
 
-##Contributions
+## Contributions
 Contributions to Scrapify Assistant are welcome. If you encounter any issues or have ideas for improvements, please create an issue or submit a pull request.
