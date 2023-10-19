@@ -9,7 +9,8 @@ Scrapify Assistant is a web scraping chatbot that simplifies the process of retr
 - Displays a chat history to keep track of the conversation.
 
 ## Getting Started
-Click the link below
+Click the link below to directly access the Scrapify Assistant on browser
+https://scrapify-assistant-ukvydtbmrehr6cs2cfkiyx.streamlit.app/
 
 (OR)
 
